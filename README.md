@@ -10,5 +10,5 @@ Repository ini berisi kumpulan tugas-tugas pemrograman dalam bahasa C++ yang dik
 
 ## Support
 
-Untuk bantuan dan pertanyaan, silahkan hubungi (https://www.instagram.com/ghazian_tza/)
+Untuk bantuan dan pertanyaan, silahkan hubungi [Instagram](https://www.instagram.com/ghazian_tza/) saya.
 
