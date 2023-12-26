@@ -78,6 +78,7 @@ void mulaiBelanja(Barang daftarBarang[], int jumlahBarang) {
         }
 
     } while (pilihan != 0);
+    system("cls");
 }
 
 // Fungsi untuk menampilkan keranjang belanja
