@@ -7,6 +7,8 @@ int pilihan;
 int jumlah;
 bool adaKeranjang = 0;
 string userInput;
+int totalKeseluruhan = 0;
+char kodeRespon;
 
 // Struct untuk menyimpan informasi barang
 typedef struct {
@@ -16,6 +18,99 @@ typedef struct {
     float totalBayar;
 } Barang;
 
+void tampilkanMenu();
+void tekanEnter();
+void mulaiBelanja(Barang daftarBarang[], int jumlahBarang);
+void tampilkanKeranjangBelanja(Barang daftarBarang[], int jumlahBarang);
+void cetakStruk(Barang daftarBarang[], int jumlahBarang, int totalHarga, int uang, int kembalian);
+void bayar(Barang daftarBarang[], int jumlahBarang);
+void tampilKeranjangKosong();
+void batalPesanan(Barang daftarBarang[], int jumlahBarang);
+void ubahJumlahBarang(Barang daftarBarang[], int jumlahBarang);
+
+int main() {
+    bool keluarProgram = false;
+
+    system("cls");
+    const int jumlahBarang = 7;
+    Barang daftarBarang[jumlahBarang] = {
+        {"Panci", 20000, 0},
+        {"Sabun", 15000, 0},
+        {"Sapu", 20000, 0},
+        {"Lampu", 25000, 0},
+        {"Gelas", 15000, 0},
+        {"Sikat", 30000, 0},
+        {"Kipas", 34000, 0}};
+
+    while (keluarProgram == false) {
+        tampilkanMenu();
+        switch (pilihan) {
+            case 1:
+                system("cls");
+                mulaiBelanja(daftarBarang, jumlahBarang);
+                break;
+            case 2:
+                system("cls");
+                if (adaKeranjang == 1) {
+                    tampilkanKeranjangBelanja(daftarBarang, jumlahBarang);
+                    tekanEnter();
+
+                    system("cls");
+                } else {
+                    tampilKeranjangKosong();
+                }
+                break;
+
+            case 3:
+                system("cls");
+                if (adaKeranjang == 1) {
+                    ubahJumlahBarang(daftarBarang, jumlahBarang);
+                } else {
+                    tampilKeranjangKosong();
+                }
+                break;
+
+            case 4:
+                system("cls");
+                if (adaKeranjang == 1) {
+                    bayar(daftarBarang, jumlahBarang);
+                    system("cls");
+                    adaKeranjang = 0;
+                } else {
+                    tampilKeranjangKosong();
+                }
+                break;
+            case 5:
+                system("cls");
+                if (adaKeranjang == 1) {
+                    batalPesanan(daftarBarang, jumlahBarang);
+                } else {
+                    tampilKeranjangKosong();
+                }
+                break;
+            case 6:
+                system("cls");
+                cout << endl
+                     << "+-----------------------------------------------------+" << endl;
+                cout << "|   Terima kasih telah menggunakan program belanja!   |" << endl;
+                cout << "|           Semoga Hari Anda Menyenangkan :)          |" << endl;
+                cout << "+-----------------------------------------------------+" << endl
+                     << endl;
+
+                cin.ignore();
+                getline(cin, userInput);
+
+                keluarProgram = true;
+                break;
+            default:
+                cout << "Pilihan tidak valid." << endl;
+                break;
+        }
+    }
+
+    return 0;
+}
+
 // Fungsi untuk menampilkan menu
 void tampilkanMenu() {
     cout << "_____________________________________________" << endl;
@@ -24,14 +119,14 @@ void tampilkanMenu() {
     cout << "|    \\__ \\/ /_/ / / / / /_/ / __/ / __/     |" << endl;
     cout << "|   ___/ / __  / /_/ / ____/ /___/ /___     |" << endl;
     cout << "|  /____/_/ /_/\\____/_/   /_____/_____/     |" << endl;
-    cout << "| __________________________________________|" << endl
+    cout << "|___________________________________________|" << endl
          << endl;
 
     cout << "+========---------------------------========+" << endl;
     cout << "| 1 | Mulai Belanja                         |" << endl;
     cout << "| 2 | Tampilkan Keranjang Belanja           |" << endl;
     cout << "| 3 | Ubah Jumlah Barang dalam Keranjang    |" << endl;
-    cout << "| 4 | Bayar                                 |" << endl;
+    cout << "| 4 | Bayar Pesanan                         |" << endl;
     cout << "| 5 | Batal Pesanan                         |" << endl;
     cout << "| 6 | Keluar Program                        |" << endl;
     cout << "+========---------------------------========+" << endl;
@@ -54,7 +149,7 @@ void mulaiBelanja(Barang daftarBarang[], int jumlahBarang) {
     cout << "| NO | NAMA BARANG \t\t|   HARGA \t |" << endl;
     cout << "+------------------------------------------------+" << endl;
     for (int i = 0; i < jumlahBarang; ++i) {
-        cout << "| " << i + 1 << "  | " << daftarBarang[i].nama << " \t\t| - Rp" << daftarBarang[i].harga << "\t |" << endl;
+        cout << "| " << i + 1 << "  | " << daftarBarang[i].nama << " \t\t\t| - Rp" << daftarBarang[i].harga << "\t |" << endl;
     }
     cout << "+------------------------------------------------+" << endl;
 
@@ -83,28 +178,27 @@ void mulaiBelanja(Barang daftarBarang[], int jumlahBarang) {
 
 // Fungsi untuk menampilkan keranjang belanja
 void tampilkanKeranjangBelanja(Barang daftarBarang[], int jumlahBarang) {
-    int totalKeseluruhan = 0;
-
-    cout << "+================================================+" << endl;
-    cout << "|               KERANJANG BELANJA                | " << endl;
-    cout << "+================================================+" << endl;
-    cout << "+------------------------------------------------+" << endl;
-    cout << "| JMLH \t| NAMA BARANG \t\t| TOTAL HARGA \t |" << endl;
-    cout << "+------------------------------------------------+" << endl;
+    totalKeseluruhan = 0;  // Reset totalKeseluruhan ke 0
+    cout << "+========================================================+" << endl;
+    cout << "|                  KERANJANG BELANJA                     | " << endl;
+    cout << "+========================================================+" << endl;
+    cout << "+--------------------------------------------------------+" << endl;
+    cout << "| ID\t| JMLH \t| NAMA BARANG \t\t| TOTAL HARGA    |" << endl;
+    cout << "+--------------------------------------------------------+" << endl;
     for (int i = 0; i < jumlahBarang; ++i) {
         if (daftarBarang[i].jumlah > 0) {
             daftarBarang[i].totalBayar = daftarBarang[i].harga * daftarBarang[i].jumlah;
 
-            cout << "| " << daftarBarang[i].jumlah << "\t| " << daftarBarang[i].nama << "\t\t| " << daftarBarang[i].totalBayar << "\t\t |" << endl;
+            cout << "| " << i + 1 << "\t| " << daftarBarang[i].jumlah << "\t| " << daftarBarang[i].nama << "\t\t\t| " << daftarBarang[i].totalBayar << "\t\t |" << endl;
 
             totalKeseluruhan += daftarBarang[i].totalBayar;
         }
     }
-    cout << "+------------------------------------------------+" << endl;
-    cout << "+------------------------------------------------+" << endl;
-    cout << "+================================================+" << endl;
-    cout << "| TOTAL KESELURUHAN: " << totalKeseluruhan << " Rupiah \t\t |" << endl;
-    cout << "+================================================+" << endl
+    cout << "+--------------------------------------------------------+" << endl;
+    cout << "+--------------------------------------------------------+" << endl;
+    cout << "+========================================================+" << endl;
+    cout << "| TOTAL KESELURUHAN: " << totalKeseluruhan << " Rupiah \t\t\t |" << endl;
+    cout << "+========================================================+" << endl
          << endl
          << endl;
 }
@@ -124,7 +218,7 @@ void cetakStruk(Barang daftarBarang[], int jumlahBarang, int totalHarga, int uan
             if (daftarBarang[i].jumlah > 0) {
                 daftarBarang[i].totalBayar = daftarBarang[i].harga * daftarBarang[i].jumlah;
 
-                fileStruk << "| " << daftarBarang[i].jumlah << "\t| " << daftarBarang[i].nama << "\t\t| " << daftarBarang[i].totalBayar << "\t\t |" << endl;
+                fileStruk << "| " << daftarBarang[i].jumlah << "\t| " << daftarBarang[i].nama << "\t\t\t| " << daftarBarang[i].totalBayar << "\t\t |" << endl;
             }
         }
         fileStruk << "+------------------------------------------------+" << endl;
@@ -152,31 +246,10 @@ void cetakStruk(Barang daftarBarang[], int jumlahBarang, int totalHarga, int uan
 void bayar(Barang daftarBarang[], int jumlahBarang) {
     char metodePembayaran;
     string kodeDiskon;
-    int totalHarga = 0;
+    int totalHarga = totalKeseluruhan;
     bool diskon50 = false;
-    char kodeRespon;
 
-    cout << "+================================================+" << endl;
-    cout << "|               KERANJANG BELANJA                | " << endl;
-    cout << "+================================================+" << endl;
-    cout << "+------------------------------------------------+" << endl;
-    cout << "| JMLH \t| NAMA BARANG \t\t| TOTAL HARGA \t |" << endl;
-    cout << "+------------------------------------------------+" << endl;
-    for (int i = 0; i < jumlahBarang; ++i) {
-        if (daftarBarang[i].jumlah > 0) {
-            daftarBarang[i].totalBayar = daftarBarang[i].harga * daftarBarang[i].jumlah;
-
-            cout << "| " << daftarBarang[i].jumlah << "\t| " << daftarBarang[i].nama << "\t\t| " << daftarBarang[i].totalBayar << "\t\t |" << endl;
-
-            totalHarga += daftarBarang[i].totalBayar;
-        }
-    }
-    cout << "+------------------------------------------------+" << endl;
-    cout << "+------------------------------------------------+" << endl;
-    cout << "+================================================+" << endl;
-    cout << "| TOTAL KESELURUHAN: " << totalHarga << " Rupiah \t\t |" << endl;
-    cout << "+================================================+" << endl
-         << endl;
+    tampilkanKeranjangBelanja(daftarBarang, jumlahBarang);
 
     cout << "+---------------------+" << endl;
     cout << "|  METODE PEMBAYARAN  |" << endl;
@@ -260,34 +333,26 @@ void tampilKeranjangKosong() {
 
 // Fungsi untuk membatalkan pesanan barang dari keranjang belanja
 void batalPesanan(Barang daftarBarang[], int jumlahBarang) {
-    int nomorPesanan;
+    cout << "+========================================================+" << endl;
+    cout << "|              PEMBATALAN PESANAN BARANG                 | " << endl;
+    cout << "+========================================================+" << endl;
+    cout << "-> Anda yakin ingin membatalkan seluruh pesanan? (y/n): ";
+    cin >> kodeRespon;
 
-    cout << "+================================================+" << endl;
-    cout << "|           PEMBATALAN PESANAN BARANG            | " << endl;
-    cout << "+================================================+" << endl;
-    cout << "+------------------------------------------------+" << endl;
-    cout << "| JMLH \t| NAMA BARANG \t\t| TOTAL HARGA \t |" << endl;
-    cout << "+------------------------------------------------+" << endl;
-    for (int i = 0; i < jumlahBarang; ++i) {
-        if (daftarBarang[i].jumlah > 0) {
-            daftarBarang[i].totalBayar = daftarBarang[i].harga * daftarBarang[i].jumlah;
+    if (kodeRespon == 'y') {
+        totalKeseluruhan = 0;
+        adaKeranjang = 0;
 
-            cout << "| " << daftarBarang[i].jumlah << "\t| " << daftarBarang[i].nama << "\t\t| " << daftarBarang[i].totalBayar << "\t\t |" << endl;
+        // Mengatur jumlah barang menjadi 0 untuk semua item
+        for (int i = 0; i < jumlahBarang; ++i) {
+            daftarBarang[i].jumlah = 0;
         }
-    }
-    cout << "+------------------------------------------------+" << endl;
-    cout << "-> Masukkan nomor pesanan yang ingin dibatalkan (0 untuk selesai): ";
-    cin >> nomorPesanan;
+        cout << endl
+             << "[ Semua pesanan barang berhasil dibatalkan! ]" << endl;
 
-    if (nomorPesanan >= 1 && nomorPesanan <= jumlahBarang) {
-        if (daftarBarang[nomorPesanan - 1].jumlah > 0) {
-            daftarBarang[nomorPesanan - 1].jumlah = 0;
-            cout << "[ Pesanan barang berhasil dibatalkan! ]" << endl;
-        } else {
-            cout << "[ Nomor pesanan tidak memiliki barang! ]" << endl;
-        }
-    } else if (nomorPesanan != 0) {
-        cout << "[ Nomor pesanan tidak valid! ]" << endl;
+    } else {
+        cout << endl
+             << "[ Pembatalan dibatalkan ]" << endl;
     }
 
     cout << "[ Tekan enter untuk kembali ke beranda ] ";
@@ -299,9 +364,9 @@ void batalPesanan(Barang daftarBarang[], int jumlahBarang) {
 void ubahJumlahBarang(Barang daftarBarang[], int jumlahBarang) {
     int nomorBarang, jumlahBaru;
 
-    cout << "+================================================+" << endl;
-    cout << "|           UBAH JUMLAH BARANG DI KERANJANG      | " << endl;
-    cout << "+================================================+" << endl;
+    cout << "+========================================================+" << endl;
+    cout << "|            UBAH JUMLAH BARANG DI KERANJANG             | " << endl;
+    cout << "+========================================================+" << endl;
 
     tampilkanKeranjangBelanja(daftarBarang, jumlahBarang);
 
@@ -333,80 +398,4 @@ void ubahJumlahBarang(Barang daftarBarang[], int jumlahBarang) {
     cin.ignore();
     getline(cin, userInput);
     system("cls");
-}
-
-int main() {
-    system("cls");
-    const int jumlahBarang = 7;
-    Barang daftarBarang[jumlahBarang] = {
-        {"Panci   ", 50000, 0},
-        {"Sabun Cuci", 15000, 0},
-        {"Payung  ", 20000, 0},
-        {"Shampoo ", 75000, 0},
-        {"Sandal Swallow", 45000, 0},
-        {"Pasta Gigi", 99000, 0},
-        {"Kipas Turbo", 34000, 0}};
-
-    do {
-        tampilkanMenu();
-        switch (pilihan) {
-            case 1:
-                system("cls");
-                mulaiBelanja(daftarBarang, jumlahBarang);
-                break;
-            case 2:
-                system("cls");
-                if (adaKeranjang == 1) {
-                    tampilkanKeranjangBelanja(daftarBarang, jumlahBarang);
-                    tekanEnter();
-
-                    system("cls");
-                } else {
-                    tampilKeranjangKosong();
-                }
-                break;
-
-            case 3:
-                system("cls");
-                if (adaKeranjang == 1) {
-                    ubahJumlahBarang(daftarBarang, jumlahBarang);
-                } else {
-                    tampilKeranjangKosong();
-                }
-                break;
-
-            case 4:
-                system("cls");
-                if (adaKeranjang == 1) {
-                    bayar(daftarBarang, jumlahBarang);
-                    system("cls");
-                    adaKeranjang = 0;
-                } else {
-                    tampilKeranjangKosong();
-                }
-                break;
-            case 5:
-                system("cls");
-                if (adaKeranjang == 1) {
-                    batalPesanan(daftarBarang, jumlahBarang);
-                } else {
-                    tampilKeranjangKosong();
-                }
-                break;
-            case 6:
-                system("cls");
-                cout << endl
-                     << "+-----------------------------------------------------+" << endl;
-                cout << "|   Terima kasih telah menggunakan program belanja!   |" << endl;
-                cout << "|           Semoga Hari Anda Menyenangkan :)          |" << endl;
-                cout << "+-----------------------------------------------------+" << endl
-                     << endl;
-                break;
-            default:
-                cout << "Pilihan tidak valid." << endl;
-                break;
-        }
-    } while (pilihan != 6);
-
-    return 0;
 }
