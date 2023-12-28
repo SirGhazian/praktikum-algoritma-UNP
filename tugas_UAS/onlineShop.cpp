@@ -1,3 +1,6 @@
+// NAMA : MUHAMMAD GHAZIAN TSAQIF ZHAFIRI ANDOZ
+// NIM  : 23343057
+
 #include <fstream>
 #include <iostream>
 #include <string>
